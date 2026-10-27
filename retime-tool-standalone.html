@@ -24,6 +24,14 @@
 @media(max-width:390px){.wrap{width:calc(100% - 28px)}.hero h1{font-size:36px;letter-spacing:-1.9px}.hero-actions{gap:14px}.hero-actions .btn{font-size:10px;padding:13px}.hero-actions .text-link{font-size:10px}.steps{grid-template-columns:1fr;gap:25px}.step{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;padding-top:18px}.step-index{grid-column:1;margin-bottom:10px}.step-art{grid-column:2;grid-row:1/4;height:90px}.step h3{margin-top:0}.step p{margin-top:8px}.shortcut-table td:first-child{width:58%}.shortcut-table{font-size:9px}kbd{font-size:8px}.purchase-meta{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}.btn:hover{transform:none}}
 @media print{.site-header{position:static}.hero-actions,.demo-actions,.shortcut-search,.toast,.menu-toggle{display:none}.wrap{width:94%}body{background:white}.feature,.faq-layout,.shortcuts,.purchase{break-inside:avoid}.faq-list details>div{display:block}}
+
+/* Readable secondary text on paper and tinted surfaces. */
+:root{--muted:#686d61}
+.hero .eyebrow,.hero-meta,.version,.nav-links a,.demo-footer,.demo-actions button,.editor-tabs button,.compat-item span,.feature-number,.feature-points li,.demo-caption,.details-banner p,.shortcut-table td,.shortcut-table th,.shortcut-count,.key-plus,.faq-list details>div,.purchase p,.purchase-meta,.price-note,.pending-link,.footer-links,.footer-bottom{color:#626e55}
+.shortcut-search input::placeholder{color:#67735b;opacity:1}
+.feature-copy>p{font-size:14px}.feature-points li{font-size:12px}.faq-list details>div{font-size:12px}.shortcut-table{font-size:12px}.demo-caption{font-size:10px}
+@media(max-width:700px){.feature-copy>p{font-size:13px}.feature-points li{font-size:11px}.shortcut-table{font-size:11px}.demo-caption{font-size:9px}}
+@media(max-width:390px){.shortcut-table{font-size:10px}}
 </style>
 
 </head>
@@ -92,7 +100,7 @@
 <tr><td>Drag blue handles</td><td>Ease or fast start / end</td></tr>
 <tr><td>Drag green bar</td><td>Adjust smooth zone size</td></tr>
 <tr><td><kbd>S</kbd></td><td>Auto-smooth all markers</td></tr>
-<tr><td><kbd>I</kbd></td><td>Insert keys at selected or all markers</td></tr>
+<tr><td><kbd>I</kbd></td><td>Insert keys at selected markers; all if none</td></tr>
 <tr><td><kbd>X</kbd></td><td>Delete markers</td></tr>
 <tr><td><kbd>Shift+Click</kbd></td><td>Multi-select markers</td></tr>
 <tr><td><kbd>Ctrl+Z</kbd> <span class="key-plus">/</span> <kbd>Ctrl+Shift+Z</kbd></td><td>Undo / redo retime drags</td></tr>
