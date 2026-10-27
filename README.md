@@ -21,3 +21,21 @@ Rebuild the standalone file after edits. `dist/styles.css` controls appearance a
 No analytics, cookies, forms, external fonts, or third-party scripts. The page respects reduced-motion preferences, includes a pause control, and supports keyboard navigation for the marker, sliders, and editor tabs.
 
 Product facts are supplied by the creator: $2, version 2.4.2, Blender 5.2+, Graph Editor and Dope Sheet, GPL-3.0-or-later.
+
+
+## Enable GitHub Pages while keeping the repository private
+
+GitHub Pages for a private personal repository requires GitHub Pro. The repository stays private, while the published website is public so it can be embedded in Superhive.
+
+1. Open https://github.com/aastik7/retime-tool-landing-page/settings/pages.
+2. If GitHub displays an upgrade prompt, GitHub Pro is required before continuing.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**. The deployment workflow is already in this repository.
+4. Open https://github.com/aastik7/retime-tool-landing-page/actions/workflows/pages.yml.
+5. Click **Run workflow**, choose the **main** branch, and click **Run workflow** again.
+6. Open the run and wait for **Publish landing page** to finish successfully.
+7. Open the website at https://aastik7.github.io/retime-tool-landing-page/. This URL works after the first successful deployment.
+8. Open that URL in a private/incognito browser window to confirm visitors can view it without signing in.
+
+The workflow uploads only `dist/`. Future pushes to `main` that change `dist/` deploy automatically. Changes to the guide or workflow can be deployed manually using the same **Run workflow** button. GitHub repository visibility and website visibility are separate settings.
+
+Official instructions: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
