@@ -10,6 +10,12 @@ Run `node build-standalone.mjs` to rebuild `retime-tool-standalone.html`. The ex
 
 The hosted page uses only relative media paths. Keep the deployment contents together in `dist/`. Rebuild the standalone file after changing content, styles, configuration, or media. Nothing in this build script publishes the page.
 
+## Typography and responsive layout
+
+Explanatory copy is 18 px on desktop and 17 px on phones, with 1.7 line spacing. Captions use 15 px; labels, metadata, keycaps, and footer details never drop below 14 px. Secondary copy uses darker neutral colors. Headings have their own scale and tighter spacing. Narrow layouts stack instead of reducing text size, and shortcuts wrap within their table cells.
+
+The readability pass checked every rendered text node, including expanded FAQs, at 320, 390, 768, and 1280 px: no text below 14 px, no horizontal text overflow, and sufficient contrast on the authored solid backgrounds. Native Blender UI inside recordings retains its recorded size; use the player's fullscreen control for closer inspection. The tiny decorative frame numbers in the undo illustration were removed; the readable history status explains the interaction.
+
 ## Media and capture provenance
 
 | File in `dist/media/` | Placement |
@@ -44,7 +50,7 @@ The page follows the source audit on these details:
 
 Open `/?embed=1` for the product-description layout. It hides the outside-site header, repeated purchase prompts, price/purchase panel, and footer navigation. A compact navigation labeled “In this description” links only to sections inside the iframe. It does not access, resize, scroll, or redirect the parent Superhive page. The compatibility strip still states the creator's $2 price.
 
-Copy `superhive-embed.html` into a Superhive field that accepts iframe HTML. It uses the existing address `https://aastik7.github.io/retime-tool-landing-page/?embed=1`, width `100%`, and a **starting height of 7600 px**. This is an estimate, not a verified final height. Verify clipping and excess space on desktop and mobile within the actual listing; the content height also changes when FAQs open. The iframe retains normal internal scrolling. The snippet does not enable hosting or change Superhive/account settings.
+Copy `superhive-embed.html` into a Superhive field that accepts iframe HTML. It uses the existing address `https://aastik7.github.io/retime-tool-landing-page/?embed=1`, width `100%`, and a **starting height of 12000 px** for the larger typography. Local default-FAQ measurements range from about 7400 px on a wide desktop to 11600 px at a 320 px viewport; at 720 px the page is about 9750 px tall. This is a starting point, not a verified final height in Superhive. Adjust excess space for the actual listing width and check expanded FAQs. The iframe retains normal internal scrolling. The snippet does not enable hosting or change Superhive/account settings.
 
 ## Verification handoff
 

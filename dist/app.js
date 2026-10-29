@@ -197,11 +197,9 @@ const RETIME_CONFIG = {
   function renderUndo() {
     const middle = history[historyIndex];
     undo.replaceChildren();
-    [65, middle, 495].forEach((x, index) => {
+    [65, middle, 495].forEach(x => {
       node('path', { d: `M${x} 20V175`, stroke: '#d5a06c', 'stroke-width': 1, opacity: 0.75 }, undo);
       node('rect', { x: x - 8, y: 15, width: 16, height: 10, rx: 1, fill: '#d5a06c' }, undo);
-      const text = node('text', { x, y: 22.5, 'text-anchor': 'middle', fill: '#292f20', 'font-size': 6.5, 'font-family': 'Consolas,monospace' }, undo);
-      text.textContent = String(index * 24 + 1);
     });
     node('path', { d: smoothPath([[20, 135], [65, 135], [middle - 70, 70], [middle, 78], [495, 120], [540, 120]]), fill: 'none', stroke: '#bbca99', 'stroke-width': 2.4 }, undo);
     node('rect', { x: 65, y: 20, width: middle - 65, height: 5, fill: '#c48d54', rx: 2 }, undo);
