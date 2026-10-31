@@ -1,6 +1,6 @@
 # Retime Tool landing page
 
-A compact, visual product page for the complete **$2 Retime Tool**, version **2.4.2**, for **Blender 5.2+**, in the **Graph Editor and Dope Sheet**, under **GPL-3.0-or-later**.
+A compact, visual product page for **Retime Tool**, version **2.4.2**, for **Blender 5.2+**, in the **Graph Editor and Dope Sheet**, under **GPL-3.0-or-later**. The live Retime Superlite listing has a **$3 regular USD price**; temporary sale prices are left to the store.
 
 The art direction uses solid near-black `#101218`, orange `#ff6b2b` purchase panels, cyan `#5ee8ed` demo controls, and lime `#d5ff59` badges/checks. The hero shows the preserved wide Blender capture, with the price and CTA before the media on phones. The three annotated demos share a large, accessible scene switcher. Detailed controls, installation, scope, and timing limits start collapsed. The old duplicate marker player, undo illustration, and repeated workflow/problem copy have been removed.
 
@@ -8,9 +8,9 @@ The art direction uses solid near-black `#101218`, orange `#ff6b2b` purchase pan
 
 Run `npm run dev` and open `http://localhost:5173`. The dependency-free server serves `dist/`; set `PORT` to select a different port. Reuse an existing server when one is already running.
 
-Run `node build-standalone.mjs` after changing HTML, CSS, JavaScript, or configuration. This rebuilds `retime-tool-standalone.html`; it does not publish anything. Keep the stylesheet and deferred script tags in `dist/index.html` synchronized with the builder's exact replacements.
+Run `node build-standalone.mjs` after changing HTML, CSS, JavaScript, or configuration. This rebuilds `retime-tool-standalone.html`; it does not publish anything. The builder accepts a cache-version query on the stylesheet and deferred script tags, and validates both before embedding them.
 
-The standalone contains inline CSS/JavaScript and **11 unique embedded media assets**: the original wide live MP4 and static poster plus all nine guided assets. All quoted local `src`, `poster`, and direct-format `href` references are embedded, including fallback links. The current export is **6,087,507 bytes / 5.81 MiB**, with 19 embedded references. The build checks all nine guides and all six preserved original assets before replacing the export and rejects unresolved local media references. A byte-hash check confirmed every embedded reference matches its source file.
+The standalone contains inline CSS/JavaScript and **11 unique embedded media assets**: the original wide live MP4 and static poster plus all nine guided assets. All quoted local `src`, `poster`, and direct-format `href` references are embedded, including fallback links. The current export is about **5.81 MiB**, with 19 embedded references. The build checks all nine guides and all six preserved original assets before replacing the export and rejects unresolved local media references. A byte-hash check confirmed every embedded reference matches its source file.
 
 The hosted page uses relative paths. Keep all contents of `dist/` together. Standalone format links contain data URLs; browsers can restrict opening those in a new tab. Use hosted relative media URLs when sharing clips or adding an image to Superhive. External purchase/support/license destinations require internet access.
 
@@ -18,7 +18,8 @@ The hosted page uses relative paths. Keep all contents of `dist/` together. Stan
 
 Edit `RETIME_CONFIG` at the top of `dist/app.js` using creator-confirmed values only:
 
-- `productUrl`: currently empty. Start/middle purchase prompts lead to `#get-retime`. The final action has no destination, is marked disabled, and says **Superhive link coming soon**; the visible status says **Buy link coming soon**.
+- `productUrl`: verified live listing, `https://superhivemarket.com/products/retime-superlite-` (the trailing dash is part of the slug). Its live About section embeds this page.
+- `purchaseUrl`: the listing plus `#cart_item_quantity_267501`. All purchase buttons use `_top` to leave the embedded description and bring Superhive’s native seat quantity and Add to cart controls into view. They do not claim to add a product automatically: a tokenless cross-origin POST was rejected with HTTP 422, and no public direct-add URL was verified. Do not embed session CSRF tokens or invent a cart URL. A supported checkout link can replace this destination when available.
 - `supportEmail` and `supportProfile`: currently empty. Contact support stays hidden until a real contact is supplied.
 
 A configured product URL enables the purchase links with safe HTTP(S) validation and external-link attributes. No invented redirect, contact, review, sales count, guarantee, analytics, cookies, external fonts, or third-party scripts are included.
@@ -79,10 +80,10 @@ The existing media workflow is `python ../media-work/scripts/retime_explainers.p
 
 ## Superhive embed and handoff
 
-`/?embed=1` hides only the outside-site header and footer, then adds compact internal description navigation. **Hero, middle, and bottom purchase prompts remain visible**, including both giant prices and the pending final link/status. All internal links stay within the iframe; the page does not access, resize, scroll, or redirect the parent.
+`/?embed=1` hides only the outside-site header and footer, then adds compact internal description navigation. **Hero, middle, and bottom purchase prompts remain visible**, including both giant prices and the live purchase link. Section links remain within the iframe; purchase links deliberately navigate the top page to the native store controls after a buyer click. The page does not read or modify the parent document. Named details and a JavaScript fallback keep one accordion open at a time, including when a feature link opens smoothing details.
 
 `superhive-embed.html` retains its existing URL and now uses a **2700px starting height**, replacing the old 13000px reservation. All three closed-details scenes measured 1963–2637px at 320, 390, 728, 1024 and 1280px widths. Keep normal iframe scrolling for expanded details and allow for browser font differences. Replace the old snippet on Superhive to reduce the reserved empty area; the live listing editor itself has not been changed.
 
 The optional `superhive-video-clips.html` and `superhive-image-clips.html` fragments remain unchanged. The first has native MP4 players/static posters; the second contains continuously animated images. Hosted `.webp` file URLs or uploads are appropriate for direct-image placement if the listing editor supports animation. Do not paste standalone data URLs as public image addresses.
 
-Implementation checks passed: JavaScript/build syntax, standalone rebuild and embedded byte matching, local anchor resolution, no changed media files, four-width normal/embed overflow/type checks, scene click/keyboard behavior, shortcut filtering/no-results, pending checkout/support state, zero unrequested animated-image loads, and manual hero pause persistence. Root owns final visual/browser QA, supported-Blender package tests, actual Superhive editor checks, iframe-height adjustment, and publication. No commits, pushes, hosting changes, or publication were performed.
+Validation covers JavaScript/build syntax, standalone embedding, local anchors, responsive overflow/type checks, scene keyboard behavior, shortcut filtering, exclusive accordions (including the older-browser fallback), and purchase destinations. The live store quantity anchor and Add to cart controls were verified without placing an order. The embedded description cannot automatically submit Superhive’s protected cart form. Plugin source and existing media remain untouched.

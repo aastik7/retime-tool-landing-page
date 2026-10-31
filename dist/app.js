@@ -1,6 +1,7 @@
-// Supply only the creator's confirmed listing and support contact.
+// Verified live listing and native purchase controls. No cross-site cart POST.
 const RETIME_CONFIG = {
-  productUrl: '',
+  productUrl: 'https://superhivemarket.com/products/retime-superlite-',
+  purchaseUrl: 'https://superhivemarket.com/products/retime-superlite-#cart_item_quantity_267501',
   supportEmail: '',
   supportProfile: ''
 };
@@ -18,16 +19,17 @@ const RETIME_CONFIG = {
   };
 
   const productUrl = safeHttp(RETIME_CONFIG.productUrl);
+  const purchaseUrl = safeHttp(RETIME_CONFIG.purchaseUrl) || productUrl;
   const purchase = $('#purchase-final');
-  if (productUrl) {
+  if (purchaseUrl) {
     $$('[data-purchase], #purchase-final').forEach(link => {
-      link.href = productUrl;
-      link.target = '_blank';
+      link.href = purchaseUrl;
+      link.target = '_top';
       link.rel = 'noopener noreferrer';
       link.removeAttribute('aria-disabled');
     });
-    purchase.textContent = 'Buy on Superhive · $2 ↗';
-    $('#purchase-status').textContent = 'Purchase and download through Superhive.';
+    purchase.textContent = 'Get Retime ↗';
+    $('#purchase-status').textContent = 'Regular price · USD. Choose seats, then Add to cart.';
   }
 
   const contact = RETIME_CONFIG.supportEmail
@@ -184,11 +186,29 @@ const RETIME_CONFIG = {
     $('#shortcut-count').textContent = query ? `${count} of ${rows.length} controls shown.` : `${rows.length} controls.`;
   });
 
+  // Native named details are exclusive; this also supports older browsers.
+  const details = $$('.details-list details');
+  function closeOtherDetails(opened) {
+    details.forEach(detail => { if (detail !== opened) detail.open = false; });
+  }
+  new MutationObserver(records => {
+    let latestOpened;
+    records.forEach(({ target, oldValue }) => {
+      if (oldValue === null && target.open && details.includes(target)) latestOpened = target;
+    });
+    if (latestOpened) closeOtherDetails(latestOpened);
+  }).observe($('.details-list'), {
+    subtree: true, attributes: true, attributeFilter: ['open'], attributeOldValue: true
+  });
+
   // Reveal a collapsed native detail when a feature links directly to it.
   function revealDetail() {
     if (!location.hash) return;
     const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if (target?.matches('details')) target.open = true;
+    if (target?.matches('details')) {
+      closeOtherDetails(target);
+      target.open = true;
+    }
   }
   addEventListener('hashchange', revealDetail);
   revealDetail();

@@ -6,6 +6,11 @@ const [html, css, js] = await Promise.all([
   readFile(new URL('./dist/styles.css', import.meta.url), 'utf8'),
   readFile(new URL('./dist/app.js', import.meta.url), 'utf8')
 ]);
+const cssTag = /<link rel="stylesheet" href="\.\/styles\.css(?:\?[^"<>]*)?">/;
+const jsTag = /<script src="\.\/app\.js(?:\?[^"<>]*)?" defer><\/script>/;
+if (!cssTag.test(html) || !jsTag.test(html)) {
+  throw new Error('Cannot build standalone: expected page stylesheet/script tags were not found.');
+}
 
 // Every guide needs a playable clip, an explicitly linked animation, and a still poster.
 const guidedMediaPaths = ['marker', 'ease', 'smooth'].flatMap(guide => [
@@ -43,8 +48,8 @@ const assets = new Map(mediaPaths.map(path => {
 
 const standalone = html
   .replace(mediaPattern, (_, attribute, quote, path) => `${attribute}=${quote}${assets.get(path)}${quote}`)
-  .replace('<link rel="stylesheet" href="./styles.css">', () => '<style>' + css.replace(/<\/style/gi, '<\\/style') + '</style>')
-  .replace('<script src="./app.js" defer></script>', '')
+  .replace(cssTag, () => '<style>' + css.replace(/<\/style/gi, '<\\/style') + '</style>')
+  .replace(jsTag, '')
   .replace('</body>', () => '<script>' + js.replace(/<\/script/gi, '<\\/script') + '</script></body>');
 
 if (mediaPattern.test(standalone)) throw new Error('Cannot build standalone: unresolved local media reference.');
