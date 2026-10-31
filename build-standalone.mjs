@@ -13,7 +13,7 @@ const guidedMediaPaths = ['marker', 'ease', 'smooth'].flatMap(guide => [
   `./media/retime-${guide}-guide.webp`,
   `./media/retime-${guide}-guide-poster.webp`
 ]);
-// The source captures stay in dist/media even though only the guides are embedded.
+// Preserve every original capture; the wide live capture also appears in the hero.
 const originalMediaPaths = ['live', 'ease', 'smooth'].flatMap(capture => [
   `./media/retime-${capture}.mp4`,
   `./media/retime-${capture}-poster.webp`

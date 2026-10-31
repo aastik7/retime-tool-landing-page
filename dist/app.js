@@ -17,16 +17,8 @@ const RETIME_CONFIG = {
     } catch { return ''; }
   };
 
-  let toastTimer;
-  function toast(message) {
-    const element = $('#toast');
-    element.textContent = message;
-    element.classList.add('visible');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => element.classList.remove('visible'), 3500);
-  }
-
   const productUrl = safeHttp(RETIME_CONFIG.productUrl);
+  const purchase = $('#purchase-final');
   if (productUrl) {
     $$('[data-purchase], #purchase-final').forEach(link => {
       link.href = productUrl;
@@ -34,13 +26,8 @@ const RETIME_CONFIG = {
       link.rel = 'noopener noreferrer';
       link.removeAttribute('aria-disabled');
     });
-    $('#purchase-final').innerHTML = 'Get it on Superhive <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg>';
-    $('#purchase-status').textContent = 'Purchase and download securely through Superhive.';
-  } else {
-    $('#purchase-final').addEventListener('click', event => {
-      event.preventDefault();
-      toast('The Superhive product link is coming soon.');
-    });
+    purchase.textContent = 'Buy on Superhive · $2 ↗';
+    $('#purchase-status').textContent = 'Purchase and download through Superhive.';
   }
 
   const contact = RETIME_CONFIG.supportEmail
@@ -56,35 +43,46 @@ const RETIME_CONFIG = {
     }
   }
 
-  const menu = $('.menu-toggle');
-  const nav = $('#nav-links');
-  function closeMenu() {
-    menu.setAttribute('aria-expanded', 'false');
-    menu.setAttribute('aria-label', 'Open navigation');
-    nav.classList.remove('open');
+  // Without JavaScript all three guides remain available with native controls.
+  const tabs = $$('.scene-tab');
+  const panels = $$('.scene-panel');
+  const tablist = $('.scene-tabs');
+  tablist.setAttribute('role', 'tablist');
+  document.documentElement.classList.add('is-interactive');
+  function selectScene(index, focus = false) {
+    tabs.forEach((tab, current) => {
+      const active = current === index;
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-selected', String(active));
+      tab.tabIndex = active ? 0 : -1;
+      const panel = panels[current];
+      if (!active) $$('video', panel).forEach(video => video.pause());
+      panel.hidden = !active;
+      panel.setAttribute('role', 'tabpanel');
+      panel.tabIndex = 0;
+    });
+    if (focus) tabs[index].focus();
   }
-  menu.addEventListener('click', () => {
-    const open = menu.getAttribute('aria-expanded') !== 'true';
-    menu.setAttribute('aria-expanded', String(open));
-    menu.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
-    nav.classList.toggle('open', open);
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectScene(index));
+    tab.addEventListener('keydown', event => {
+      let next;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index + tabs.length - 1) % tabs.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = tabs.length - 1;
+      if (next === undefined) return;
+      event.preventDefault();
+      selectScene(next, true);
+    });
   });
-  $$('a', nav).forEach(link => link.addEventListener('click', closeMenu));
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && nav.classList.contains('open')) {
-      closeMenu();
-      menu.focus();
-    }
-  });
+  selectScene(0);
 
   // Native players remain usable without JavaScript. Only the hero may autoplay.
   const videos = $$('video.recording');
   const hero = $('#hero-video');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const states = new Map(videos.map(video => [video, {
-    visible: false,
-    pausedForVisibility: false
-  }]));
+  const states = new Map(videos.map(video => [video, { visible: false, pausedForVisibility: false }]));
   let heroMayAutoplay = !reducedMotion.matches;
   let heroPlayRequest = null;
 
@@ -99,7 +97,7 @@ const RETIME_CONFIG = {
     videos.forEach(video => {
       const state = states.get(video);
       const fullscreen = document.fullscreenElement;
-      const visible = state.visible || (fullscreen && fullscreen.contains(video));
+      const visible = !video.closest('[hidden]') && (state.visible || (fullscreen && fullscreen.contains(video)));
       if (!visible || document.hidden) {
         pauseForVisibility(video);
         return;
@@ -108,7 +106,6 @@ const RETIME_CONFIG = {
       const request = { interrupted: false };
       heroPlayRequest = request;
       video.play().catch(error => {
-        // Scrolling away while play() is pending should not disable a later resume.
         if (error.name !== 'AbortError' || !request.interrupted) heroMayAutoplay = false;
       }).finally(() => {
         heroPlayRequest = null;
@@ -175,57 +172,6 @@ const RETIME_CONFIG = {
     }
   });
 
-  // This small undo illustration explains history; it is not the add-on algorithm.
-  const NS = 'http://www.w3.org/2000/svg';
-  const node = (tag, attributes, parent) => {
-    const element = document.createElementNS(NS, tag);
-    Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
-    parent.append(element);
-    return element;
-  };
-  function smoothPath(points) {
-    return points.reduce((path, point, index) => {
-      if (!index) return `M${point[0]},${point[1]}`;
-      const previous = points[index - 1];
-      const middle = (previous[0] + point[0]) / 2;
-      return path + ` C${middle},${previous[1]} ${middle},${point[1]} ${point[0]},${point[1]}`;
-    }, '');
-  }
-  const undo = $('#undo-graph');
-  const history = [280];
-  let historyIndex = 0;
-  function renderUndo() {
-    const middle = history[historyIndex];
-    undo.replaceChildren();
-    [65, middle, 495].forEach(x => {
-      node('path', { d: `M${x} 20V175`, stroke: '#d5a06c', 'stroke-width': 1, opacity: 0.75 }, undo);
-      node('rect', { x: x - 8, y: 15, width: 16, height: 10, rx: 1, fill: '#d5a06c' }, undo);
-    });
-    node('path', { d: smoothPath([[20, 135], [65, 135], [middle - 70, 70], [middle, 78], [495, 120], [540, 120]]), fill: 'none', stroke: '#bbca99', 'stroke-width': 2.4 }, undo);
-    node('rect', { x: 65, y: 20, width: middle - 65, height: 5, fill: '#c48d54', rx: 2 }, undo);
-    $('#demo-undo').disabled = historyIndex === 0;
-    $('#demo-redo').disabled = historyIndex === history.length - 1;
-    const status = $('#undo-status');
-    status.replaceChildren(document.createTextNode(historyIndex === 0 ? 'Your original timing. ' : `Retime ${historyIndex}. `));
-    const note = document.createElement('span');
-    note.textContent = historyIndex === 0 ? 'Try a retime.' : 'Undo or try another.';
-    status.append(note);
-  }
-  $('#demo-retime').addEventListener('click', () => {
-    history.splice(historyIndex + 1);
-    const choices = [355, 225, 395, 310];
-    history.push(choices[historyIndex % choices.length]);
-    historyIndex++;
-    renderUndo();
-  });
-  $('#demo-undo').addEventListener('click', () => {
-    if (historyIndex > 0) { historyIndex--; renderUndo(); }
-  });
-  $('#demo-redo').addEventListener('click', () => {
-    if (historyIndex < history.length - 1) { historyIndex++; renderUndo(); }
-  });
-  renderUndo();
-
   const rows = $$('#shortcut-table tbody tr');
   $('#shortcut-search').addEventListener('input', event => {
     const query = event.target.value.trim().toLowerCase();
@@ -235,8 +181,15 @@ const RETIME_CONFIG = {
       if (!row.hidden) count++;
     });
     $('#no-shortcuts').hidden = count !== 0;
-    $('#shortcut-count').textContent = query
-      ? `${count} of ${rows.length} controls shown.`
-      : `${rows.length} controls. One smoother workflow.`;
+    $('#shortcut-count').textContent = query ? `${count} of ${rows.length} controls shown.` : `${rows.length} controls.`;
   });
+
+  // Reveal a collapsed native detail when a feature links directly to it.
+  function revealDetail() {
+    if (!location.hash) return;
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target?.matches('details')) target.open = true;
+  }
+  addEventListener('hashchange', revealDetail);
+  revealDetail();
 })();
